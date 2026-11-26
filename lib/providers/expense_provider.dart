@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import '../db/app_database.dart';
 import '../models/budget.dart';
 import '../models/expense.dart';
 import '../models/expense_category.dart';
 import '../services/notification_service.dart';
+import '../services/sync_service.dart';
 
 class ExpenseProvider extends ChangeNotifier {
   final AppDatabase _db = AppDatabase.instance;
@@ -74,8 +76,8 @@ class ExpenseProvider extends ChangeNotifier {
       });
 
   Future<void> remove(String id) {
-    // Se quita de la lista al instante para que Dismissible no marque error.
     expenses = expenses.where((e) => e.id != id).toList();
+    unawaited(SyncService().deleteRemote(id));
     return _run(() async {
       await _db.deleteExpense(id);
       await _reload();
@@ -86,4 +88,14 @@ class ExpenseProvider extends ChangeNotifier {
         await _db.setBudget(categoryId, limit);
         await _reload();
       });
+
+  Future<void> sync() => _run(
+        () async {
+          final s = SyncService();
+          await s.push();
+          await s.pull();
+          await _reload();
+        },
+        msg: 'No se pudo sincronizar. Revisa tu conexión.',
+      );
 }
