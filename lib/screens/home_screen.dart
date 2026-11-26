@@ -4,6 +4,7 @@ import '../providers/expense_provider.dart';
 import '../services/auth_service.dart';
 import '../utils/format.dart';
 import 'expense_form_screen.dart';
+import 'stats_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -30,6 +31,14 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Mis gastos'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.pie_chart),
+            tooltip: 'Estadísticas',
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const StatsScreen()),
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.cloud_sync),
             tooltip: 'Sincronizar',
