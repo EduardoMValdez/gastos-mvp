@@ -3,6 +3,7 @@ import '../db/app_database.dart';
 import '../models/budget.dart';
 import '../models/expense.dart';
 import '../models/expense_category.dart';
+import '../services/notification_service.dart';
 
 class ExpenseProvider extends ChangeNotifier {
   final AppDatabase _db = AppDatabase.instance;
@@ -45,16 +46,31 @@ class ExpenseProvider extends ChangeNotifier {
     monthTotals = await _db.monthTotals();
   }
 
+  Future<void> _checkBudget(int categoryId) async {
+    final b = budgets[categoryId];
+    if (b == null || b.weeklyLimit <= 0) return;
+    final spent = await _db.spentThisWeek(categoryId);
+    final percent = spent / b.weeklyLimit * 100;
+    if (percent >= 80) {
+      await NotificationService.showBudgetAlert(
+        categoryOf(categoryId)?.name ?? 'Gastos',
+        percent,
+      );
+    }
+  }
+
   Future<void> load() => _run(_reload);
 
   Future<void> add(Expense e) => _run(() async {
         await _db.insertExpense(e);
         await _reload();
+        await _checkBudget(e.categoryId);
       });
 
   Future<void> edit(Expense e) => _run(() async {
         await _db.updateExpense(e);
         await _reload();
+        await _checkBudget(e.categoryId);
       });
 
   Future<void> remove(String id) {
