@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "388947102153",
+    "project_id": "aplication-5dd5b",
+    "storage_bucket": "aplication-5dd5b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:388947102153:android:dbee256b502c7f29f5c018",
+        "android_client_info": {
+          "package_name": "com.eduardo.gastos_mvp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAnsu9SXhFQrkEhPw1cxskipr_dLDyiTTY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

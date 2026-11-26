@@ -1,17 +1,21 @@
-# gastos_mvp
+# Gastos MVP
 
-A new Flutter project.
+App móvil de gestión de gastos personales hecha con Flutter y Dart.
 
-## Getting Started
+## Funciones
+- Login y registro con Firebase Auth
+- CRUD de gastos con SQLite (gastos, categorías y presupuestos)
+- Foto del ticket con la cámara
+- Alerta local al llegar al 80 % del presupuesto semanal
+- Sincronización con Firestore
+- Gráfica por categoría con fl_chart
+- Notas cifradas con AES-GCM
 
-This project is a starting point for a Flutter application.
+## Cómo ejecutarla
+1. flutter pub get
+2. flutterfire configure --project=aplication-5dd5b
+3. flutter run
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Limitaciones conocidas
+- Solo se cifran las notas; la base local es por dispositivo.
+- Las fotos de tickets no se sincronizan.
