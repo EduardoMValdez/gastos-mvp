@@ -16,4 +16,17 @@ class Validators {
     }
     return null;
   }
+
+  static double? parseAmount(String? v) => double.tryParse((v ?? '').trim());
+
+  static String? amount(String? v) {
+    final n = parseAmount(v);
+    if (n == null) return 'Ingresa un monto válido';
+    if (n <= 0) return 'El monto debe ser mayor a 0';
+    if (n > 1000000) return 'Monto demasiado alto';
+    return null;
+  }
+
+  static String? note(String? v) =>
+      (v != null && v.trim().length > 120) ? 'Máximo 120 caracteres' : null;
 }
