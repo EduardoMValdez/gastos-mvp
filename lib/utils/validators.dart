@@ -17,7 +17,8 @@ class Validators {
     return null;
   }
 
-  static double? parseAmount(String? v) => double.tryParse((v ?? '').trim());
+    static double? parseAmount(String? v) =>
+      double.tryParse((v ?? '').trim().replaceAll(',', '.'));
 
   static String? amount(String? v) {
     final n = parseAmount(v);
