@@ -1,4 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import '../models/expense.dart';
@@ -47,6 +51,29 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
       lastDate: DateTime.now(),
     );
     if (d != null) setState(() => _date = d);
+  }
+
+  Future<void> _takePhoto() async {
+    try {
+      final x = await ImagePicker().pickImage(
+        source: ImageSource.camera,
+        maxWidth: 1600,
+        imageQuality: 80,
+      );
+      if (x == null) return;
+      final base = await getApplicationDocumentsDirectory();
+      final dir = Directory(p.join(base.path, 'tickets'));
+      await dir.create(recursive: true);
+      final dest = p.join(dir.path, '${const Uuid().v4()}.jpg');
+      await File(x.path).copy(dest);
+      setState(() => _photoPath = dest);
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No se pudo usar la cámara')),
+        );
+      }
+    }
   }
 
   Future<void> _save() async {
@@ -105,6 +132,19 @@ class _ExpenseFormScreenState extends State<ExpenseFormScreen> {
             leading: const Icon(Icons.event),
             title: Text(dateFmt.format(_date)),
             onTap: _pickDate,
+          ),
+          if (_photoPath != null && File(_photoPath!).existsSync())
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.file(File(_photoPath!), height: 180, fit: BoxFit.cover),
+              ),
+            ),
+          OutlinedButton.icon(
+            onPressed: _takePhoto,
+            icon: const Icon(Icons.camera_alt),
+            label: Text(_photoPath == null ? 'Foto del ticket' : 'Cambiar foto'),
           ),
           const SizedBox(height: 16),
           FilledButton(
