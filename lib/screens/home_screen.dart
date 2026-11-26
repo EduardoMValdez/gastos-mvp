@@ -15,7 +15,11 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => context.read<ExpenseProvider>().load());
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final p = context.read<ExpenseProvider>();
+      await p.load();
+      await p.sync();
+    });
   }
 
   @override
@@ -26,6 +30,11 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Mis gastos'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.cloud_sync),
+            tooltip: 'Sincronizar',
+            onPressed: p.sync,
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'Cerrar sesión',
