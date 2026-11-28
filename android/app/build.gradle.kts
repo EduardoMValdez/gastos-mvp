@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     // START: FlutterFire Configuration
@@ -7,13 +10,21 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// Lee las credenciales de firma desde android/key.properties (local) o desde
+// variables de entorno (CI). Este archivo NUNCA se sube al repositorio.
+val keystoreProperties = Properties()
+val keystorePropertiesFile = rootProject.file("key.properties")
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+}
+
 android {
     namespace = "com.eduardo.gastos_mvp"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
-        // CAMBIO 1: necesario para flutter_local_notifications
+        // necesario para flutter_local_notifications
         isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -21,16 +32,28 @@ android {
 
     defaultConfig {
         applicationId = "com.eduardo.gastos_mvp"
-        // CAMBIO 2: Firebase y flutter_secure_storage exigen mínimo 23
+        // Firebase y flutter_secure_storage exigen mínimo 23
         minSdk = maxOf(flutter.minSdkVersion, 23)
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        create("release") {
+            if (keystorePropertiesFile.exists()) {
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+                storeFile = file(keystoreProperties["storeFile"] as String)
+                storePassword = keystoreProperties["storePassword"] as String
+            }
+        }
+    }
+
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("debug")
+            // Antes: signingConfigs.getByName("debug")  (no válido para Play)
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 }
@@ -41,7 +64,6 @@ kotlin {
     }
 }
 
-// CAMBIO 3: dependencia de desugaring (este bloque no existía)
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }
